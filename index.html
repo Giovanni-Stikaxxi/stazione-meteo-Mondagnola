@@ -10,7 +10,7 @@
       background: #eef2f3;
       margin: 0;
       padding: 0;
-      transition: background 0.3s, color 0.3s;
+      transition: background 0.4s ease, color 0.4s ease;
     }
 
     body.dark {
@@ -23,6 +23,7 @@
       color: white;
       padding: 20px;
       text-align: center;
+      animation: fadeIn 1s ease;
     }
 
     body.dark .header {
@@ -41,7 +42,12 @@
       margin-bottom: 20px;
       border-radius: 10px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: background 0.3s;
+      transition: background 0.4s ease, transform 0.3s ease;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
     }
 
     body.dark .card {
@@ -53,10 +59,8 @@
       height: 400px;
       border: none;
       border-radius: 8px;
-    }
-
-    .buttons {
-      margin-bottom: 15px;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
     }
 
     .buttons button {
@@ -68,10 +72,12 @@
       background: #3498db;
       color: white;
       font-size: 14px;
+      transition: background 0.3s ease, transform 0.2s ease;
     }
 
     .buttons button:hover {
       background: #2980b9;
+      transform: scale(1.05);
     }
 
     .theme-toggle {
@@ -83,6 +89,7 @@
       color: white;
       border-radius: 6px;
       display: inline-block;
+      transition: background 0.3s ease;
     }
 
     body.dark .theme-toggle {
@@ -99,6 +106,37 @@
 
     .weather-icon {
       font-size: 40px;
+      transition: transform 0.3s ease;
+    }
+
+    .weather-icon.animate {
+      transform: scale(1.3);
+    }
+
+    .download-btn {
+      padding: 10px 15px;
+      background: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .download-btn:hover {
+      background: #1e8449;
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -106,13 +144,13 @@
 
 <div class="header">
   <h1>Stazione Meteo - Dashboard Avanzata</h1>
-  <p>Temperatura e Umidità in tempo reale + Grafici storici</p>
+  <p>Valori in tempo reale, grafici storici e download CSV</p>
   <div class="theme-toggle" onclick="toggleTheme()">🌗 Tema Chiaro/Scuro</div>
 </div>
 
 <div class="container">
 
-  <!-- VALORI IN TEMPO REALE -->
+  <!-- VALORI LIVE -->
   <div class="card">
     <h2>Valori in Tempo Reale</h2>
     <div class="live-box">
@@ -137,6 +175,8 @@
     <iframe id="tempChart"></iframe>
     <br><br>
     <iframe id="humChart"></iframe>
+
+    <button class="download-btn" onclick="downloadCSV()">📥 Scarica storico CSV</button>
   </div>
 
 </div>
@@ -145,10 +185,10 @@
   const API_KEY = "X07M1XRUDS5UPA6W";
   const CHANNEL = "3138316";
 
-  // -------------------------
   // CAMBIO PERIODO GRAFICI
-  // -------------------------
   function changePeriod(days) {
+    fadeCharts();
+
     document.getElementById("tempChart").src =
       `https://thingspeak.com/channels/${CHANNEL}/charts/1?api_key=${API_KEY}&days=${days}&average=60&dynamic=true`;
 
@@ -156,19 +196,24 @@
       `https://thingspeak.com/channels/${CHANNEL}/charts/2?api_key=${API_KEY}&days=${days}&average=60&dynamic=true`;
   }
 
-  // Imposta periodo iniziale
+  function fadeCharts() {
+    document.getElementById("tempChart").style.opacity = 0;
+    document.getElementById("humChart").style.opacity = 0;
+
+    setTimeout(() => {
+      document.getElementById("tempChart").style.opacity = 1;
+      document.getElementById("humChart").style.opacity = 1;
+    }, 300);
+  }
+
   changePeriod(1);
 
-  // -------------------------
-  // TEMA SCURO/CHIARO
-  // -------------------------
+  // TEMA
   function toggleTheme() {
     document.body.classList.toggle("dark");
   }
 
-  // -------------------------
-  // VALORI IN TEMPO REALE
-  // -------------------------
+  // VALORI LIVE
   async function loadLiveData() {
     const url = `https://api.thingspeak.com/channels/${CHANNEL}/feeds.json?api_key=${API_KEY}&results=1`;
 
@@ -180,27 +225,4 @@
       const temp = parseFloat(feed.field1);
       const hum = parseFloat(feed.field2);
 
-      document.getElementById("liveTemp").textContent = temp.toFixed(1);
-      document.getElementById("liveHum").textContent = hum.toFixed(1);
-
-      // Icone meteo dinamiche
-      const icon = document.getElementById("weatherIcon");
-
-      if (temp < 5) icon.textContent = "❄️";
-      else if (temp < 15) icon.textContent = "🌥️";
-      else if (temp < 25) icon.textContent = "⛅";
-      else if (temp < 32) icon.textContent = "🌤️";
-      else icon.textContent = "🔥";
-
-    } catch (e) {
-      console.log("Errore caricamento dati live", e);
-    }
-  }
-
-  // Aggiorna ogni 30 secondi
-  loadLiveData();
-  setInterval(loadLiveData, 30000);
-</script>
-
-</body>
-</html>
+      animateValue("liveTemp",
