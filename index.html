@@ -119,11 +119,6 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.15);
     }
 
-    .weather-day img {
-      width: 45px;
-      height: 45px;
-    }
-
     .weather-temp {
       font-size: 18px;
       font-weight: bold;
@@ -300,7 +295,8 @@
     document.getElementById("weatherWidget").innerHTML = html;
   }
 
-  loadWeather();
+  // Ritardo per evitare blocchi su Firefox
+  setTimeout(loadWeather, 300);
 </script>
 
 </body>
