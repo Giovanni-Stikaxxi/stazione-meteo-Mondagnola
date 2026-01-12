@@ -55,7 +55,7 @@
 
     iframe {
       width: 100%;
-      height: 650px;
+      height: 500px; /* GRAFICI PIÙ PICCOLI */
       border: none;
       border-radius: 10px;
     }
@@ -71,22 +71,12 @@
     }
 
     .btn-24h { background: #27ae60; }
-    .btn-24h:hover { background: #2ecc71; }
-
     .btn-7d { background: #e67e22; }
-    .btn-7d:hover { background: #d35400; }
-
     .btn-30d { background: #8e44ad; }
-    .btn-30d:hover { background: #9b59b6; }
 
     .btn-refresh { background: #2980b9; }
-    .btn-refresh:hover { background: #3498db; }
-
     .btn-danger { background: #c0392b; }
-    .btn-danger:hover { background: #e74c3c; }
-
     .btn-reboot { background: #34495e; }
-    .btn-reboot:hover { background: #2c3e50; }
 
     .live-box {
       display: flex;
@@ -141,12 +131,12 @@
     <div class="live-box">
       <div class="live-card">
         <h3>Temperatura</h3>
-        <iframe src="https://thingspeak.com/channels/3138316/widgets/1" class="live-value" style="height:120px;"></iframe>
+        <iframe src="https://thingspeak.com/channels/3138316/widgets/1" style="height:120px;"></iframe>
       </div>
 
       <div class="live-card">
         <h3>Umidità</h3>
-        <iframe src="https://thingspeak.com/channels/3138316/widgets/2" class="live-value" style="height:120px;"></iframe>
+        <iframe src="https://thingspeak.com/channels/3138316/widgets/2" style="height:120px;"></iframe>
       </div>
     </div>
   </div>
@@ -171,7 +161,7 @@
   <div class="card">
     <h2>Temperatura</h2>
     <iframe id="tempFrame"
-      src="https://thingspeak.com/channels/3138316/charts/1?days=1&type=line&lineWidth=1&interval=30&average=30&width=2000&height=1200&title=Mondagnola+Temperature">
+      src="https://thingspeak.com/channels/3138316/charts/1?days=1&type=line&lineWidth=1&interval=30&average=30&width=1200&height=600&title=Mondagnola+Temperature">
     </iframe>
   </div>
 
@@ -179,15 +169,15 @@
   <div class="card">
     <h2>Umidità</h2>
     <iframe id="humFrame"
-      src="https://thingspeak.com/channels/3138316/charts/2?days=1&type=line&lineWidth=1&interval=30&average=30&width=2000&height=1200&title=Mondagnola+Humidity">
+      src="https://thingspeak.com/channels/3138316/charts/2?days=1&type=line&lineWidth=1&interval=30&average=30&width=1200&height=600&title=Mondagnola+Humidity">
     </iframe>
   </div>
 
-  <!-- Previsioni Meteo -->
+  <!-- Previsioni Meteo (Meteoblue) -->
   <div class="card">
     <h2>Previsioni Meteo – Frabosa Soprana (Mondagnola)</h2>
     <iframe 
-      src="https://www.meteo.it/widget/meteo/Frabosa%20Soprana?style=default"
+      src="https://www.meteoblue.com/en/weather/widget/daily/frabosa-soprana_italy_3176542?days=5&tempunit=C&windunit=kmh&layout=light"
       style="width:100%; height:600px; border:none; border-radius:10px;">
     </iframe>
   </div>
@@ -202,11 +192,11 @@
   function setRange(days) {
     document.getElementById("tempFrame").src =
       "https://thingspeak.com/channels/3138316/charts/1?days=" + days +
-      "&type=line&lineWidth=1&interval=30&average=30&width=2000&height=1200&title=Mondagnola+Temperature";
+      "&type=line&lineWidth=1&interval=30&average=30&width=1200&height=600&title=Mondagnola+Temperature";
 
     document.getElementById("humFrame").src =
       "https://thingspeak.com/channels/3138316/charts/2?days=" + days +
-      "&type=line&lineWidth=1&interval=30&average=30&width=2000&height=1200&title=Mondagnola+Humidity";
+      "&type=line&lineWidth=1&interval=30&average=30&width=1200&height=600&title=Mondagnola+Humidity";
   }
 </script>
 
