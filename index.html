@@ -55,7 +55,7 @@
 
     iframe {
       width: 100%;
-      height: 650px; /* GRAFICI PIÙ GRANDI */
+      height: 650px;
       border: none;
       border-radius: 10px;
     }
@@ -88,6 +88,34 @@
     .btn-reboot { background: #34495e; }
     .btn-reboot:hover { background: #2c3e50; }
 
+    .live-box {
+      display: flex;
+      gap: 20px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .live-card {
+      flex: 1;
+      min-width: 280px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .live-card h3 {
+      margin: 0 0 10px 0;
+      color: #2c3e50;
+    }
+
+    .live-value {
+      font-size: 48px;
+      font-weight: bold;
+      color: #2980b9;
+    }
+
     footer {
       text-align: center;
       padding: 20px;
@@ -105,6 +133,23 @@
 </header>
 
 <div class="container">
+
+  <!-- LIVE INDICATORS -->
+  <div class="card">
+    <h2>Dati in tempo reale</h2>
+
+    <div class="live-box">
+      <div class="live-card">
+        <h3>Temperatura</h3>
+        <iframe src="https://thingspeak.com/channels/3138316/widgets/1" class="live-value" style="height:120px;"></iframe>
+      </div>
+
+      <div class="live-card">
+        <h3>Umidità</h3>
+        <iframe src="https://thingspeak.com/channels/3138316/widgets/2" class="live-value" style="height:120px;"></iframe>
+      </div>
+    </div>
+  </div>
 
   <!-- Pulsanti gestione -->
   <div class="card">
@@ -140,9 +185,9 @@
 
   <!-- Previsioni Meteo -->
   <div class="card">
-    <h2>Previsioni Meteo – Mondagnola</h2>
+    <h2>Previsioni Meteo – Frabosa Soprana (Mondagnola)</h2>
     <iframe 
-      src="https://www.meteo.it/widget/meteo/Bologna?style=default"
+      src="https://www.meteo.it/widget/meteo/Frabosa%20Soprana?style=default"
       style="width:100%; height:600px; border:none; border-radius:10px;">
     </iframe>
   </div>
