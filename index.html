@@ -69,17 +69,23 @@
       color: white;
     }
 
-    .btn-range { background: #7f8c8d; }
-    .btn-range:hover { background: #95a5a6; }
+    .btn-24h { background: #27ae60; }
+    .btn-24h:hover { background: #2ecc71; }
 
-    .btn-refresh { background: #27ae60; }
-    .btn-refresh:hover { background: #2ecc71; }
+    .btn-7d { background: #e67e22; }
+    .btn-7d:hover { background: #d35400; }
+
+    .btn-30d { background: #8e44ad; }
+    .btn-30d:hover { background: #9b59b6; }
+
+    .btn-refresh { background: #2980b9; }
+    .btn-refresh:hover { background: #3498db; }
 
     .btn-danger { background: #c0392b; }
     .btn-danger:hover { background: #e74c3c; }
 
-    .btn-reboot { background: #2980b9; }
-    .btn-reboot:hover { background: #3498db; }
+    .btn-reboot { background: #34495e; }
+    .btn-reboot:hover { background: #2c3e50; }
 
     footer {
       text-align: center;
@@ -110,21 +116,21 @@
   <!-- Pulsanti intervallo -->
   <div class="card">
     <h2>Intervallo dati</h2>
-    <button class="btn btn-range" onclick="setRange(1)">Ultime 24 ore</button>
-    <button class="btn btn-range" onclick="setRange(7)">Ultima settimana</button>
-    <button class="btn btn-range" onclick="setRange(30)">Ultimo mese</button>
+    <button class="btn btn-24h" onclick="setRange(1)">Ultime 24 ore</button>
+    <button class="btn btn-7d" onclick="setRange(7)">Ultima settimana</button>
+    <button class="btn btn-30d" onclick="setRange(30)">Ultimo mese</button>
   </div>
 
   <!-- Grafico Temperatura -->
   <div class="card">
     <h2>Temperatura</h2>
-    <iframe id="tempFrame" src="https://thingspeak.com/channels/3138316/charts/1?days=1&dynamic=true&title=Mondagnola+Temperature"></iframe>
+    <iframe id="tempFrame" src="https://thingspeak.com/channels/3138316/charts/1?days=1&interval=60&dynamic=true&title=Mondagnola+Temperature"></iframe>
   </div>
 
   <!-- Grafico Umidità -->
   <div class="card">
     <h2>Umidità</h2>
-    <iframe id="humFrame" src="https://thingspeak.com/channels/3138316/charts/2?days=1&dynamic=true&title=Mondagnola+Humidity"></iframe>
+    <iframe id="humFrame" src="https://thingspeak.com/channels/3138316/charts/2?days=1&interval=60&dynamic=true&title=Mondagnola+Humidity"></iframe>
   </div>
 
 </div>
@@ -136,12 +142,13 @@
 <script>
   function setRange(days) {
     document.getElementById("tempFrame").src =
-      "https://thingspeak.com/channels/3138316/charts/1?days=" + days + "&dynamic=true&title=Mondagnola+Temperature";
+      "https://thingspeak.com/channels/3138316/charts/1?days=" + days + "&interval=60&dynamic=true&title=Mondagnola+Temperature";
 
     document.getElementById("humFrame").src =
-      "https://thingspeak.com/channels/3138316/charts/2?days=" + days + "&dynamic=true&title=Mondagnola+Humidity";
+      "https://thingspeak.com/channels/3138316/charts/2?days=" + days + "&interval=60&dynamic=true&title=Mondagnola+Humidity";
   }
 </script>
 
 </body>
 </html>
+
