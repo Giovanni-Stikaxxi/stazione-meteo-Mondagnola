@@ -11,6 +11,7 @@
       background: #eef2f3;
       margin: 0;
       padding: 0;
+      transition: background 0.3s, color 0.3s;
     }
 
     header {
@@ -21,6 +22,7 @@
       align-items: center;
       justify-content: center;
       gap: 20px;
+      transition: background 0.3s;
     }
 
     header img {
@@ -46,11 +48,13 @@
       margin-bottom: 25px;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: background 0.3s, color 0.3s;
     }
 
     h2 {
       margin-top: 0;
       color: #34495e;
+      transition: color 0.3s;
     }
 
     iframe {
@@ -73,10 +77,10 @@
     .btn-24h { background: #27ae60; }
     .btn-7d { background: #e67e22; }
     .btn-30d { background: #8e44ad; }
-
     .btn-refresh { background: #2980b9; }
     .btn-danger { background: #c0392b; }
     .btn-reboot { background: #34495e; }
+    .btn-dark { background: #111; }
 
     .live-box {
       display: flex;
@@ -93,6 +97,7 @@
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       text-align: center;
+      transition: background 0.3s, color 0.3s;
     }
 
     .live-value {
@@ -117,6 +122,7 @@
       border-radius: 10px;
       text-align: center;
       box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      transition: background 0.3s, color 0.3s;
     }
 
     .weather-temp {
@@ -142,6 +148,31 @@
       padding: 20px;
       color: #7f8c8d;
       font-size: 14px;
+      transition: color 0.3s;
+    }
+
+    /* TEMA SCURO */
+    body.dark {
+      background: #1e1e1e;
+      color: #e0e0e0;
+    }
+
+    body.dark header {
+      background: #111;
+    }
+
+    body.dark .card {
+      background: #2b2b2b;
+      color: #e0e0e0;
+    }
+
+    body.dark .weather-day {
+      background: #333;
+      color: #eee;
+    }
+
+    body.dark h2 {
+      color: #eee;
     }
   </style>
 </head>
@@ -184,6 +215,7 @@
     <button class="btn btn-refresh" onclick="location.reload()">Aggiorna dati</button>
     <button class="btn btn-danger" onclick="location.href='/resetwifi'">Reset Wi‑Fi</button>
     <button class="btn btn-reboot" onclick="location.href='/reboot'">Riavvia ESP32</button>
+    <button class="btn btn-dark" onclick="toggleDarkMode()">Tema Scuro</button>
   </div>
 
   <!-- Pulsanti intervallo -->
@@ -210,13 +242,27 @@
     </iframe>
   </div>
 
+  <!-- GRAFICO DEL VENTO -->
+  <div class="card">
+    <h2>Vento – Velocità e Direzione</h2>
+    <canvas id="windChart" height="300"></canvas>
+  </div>
+
 </div>
 
 <footer>
   Stazione Meteo Mondagnola – Powered by ESP32 & ThingSpeak
 </footer>
 
+<!-- LIBRERIE PER IL GRAFICO DEL VENTO -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-windrose"></script>
+
 <script>
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark");
+  }
+
   function setRange(days) {
     document.getElementById("tempFrame").src =
       "https://thingspeak.com/channels/3138316/charts/1?days=" + days +
@@ -295,8 +341,42 @@
     document.getElementById("weatherWidget").innerHTML = html;
   }
 
-  // Ritardo per evitare blocchi su Firefox
+  // Ritardo per Firefox
   setTimeout(loadWeather, 300);
+
+  // GRAFICO DEL VENTO
+  async function loadWindChart() {
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=44.307&longitude=7.825&daily=windspeed_10m_max,winddirection_10m_dominant&timezone=Europe%2FRome";
+
+    const data = await fetch(url).then(r => r.json());
+
+    const speeds = data.daily.windspeed_10m_max;
+    const dirs = data.daily.winddirection_10m_dominant;
+
+    const ctx = document.getElementById("windChart");
+
+    new Chart(ctx, {
+      type: "windrose",
+      data: {
+        labels: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+        datasets: [{
+          label: "Vento (km/h)",
+          data: dirs.map((d, i) => ({
+            direction: d,
+            value: speeds[i]
+          })),
+          backgroundColor: "rgba(52, 152, 219, 0.6)"
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  }
+
+  setTimeout(loadWindChart, 500);
 </script>
 
 </body>
