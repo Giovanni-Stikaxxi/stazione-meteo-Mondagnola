@@ -5,6 +5,14 @@
   <title>Stazione Meteo Mondagnola</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- PWA / WEB APP -->
+  <meta name="theme-color" content="#2c3e50">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Meteo Mondagnola">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -81,6 +89,7 @@
     .btn-danger { background: #c0392b; }
     .btn-reboot { background: #34495e; }
     .btn-dark { background: #111; }
+    .btn-download { background: #16a085; }
 
     .live-box {
       display: flex;
@@ -106,7 +115,6 @@
       color: #2980b9;
     }
 
-    /* WIDGET METEO */
     .weather-grid {
       display: flex;
       justify-content: space-between;
@@ -186,22 +194,20 @@
 
 <div class="container">
 
-  <!-- WIDGET METEO OPEN-METEO -->
+  <!-- WIDGET METEO -->
   <div class="card">
     <h2>Previsioni Meteo – Frabosa Soprana</h2>
     <div id="weatherWidget" class="weather-grid">Caricamento...</div>
   </div>
 
-  <!-- LIVE INDICATORS NUMERICI -->
+  <!-- LIVE -->
   <div class="card">
     <h2>Dati in tempo reale</h2>
-
     <div class="live-box">
       <div class="live-card">
         <h3>Temperatura</h3>
         <div id="tempLive" class="live-value">--</div>
       </div>
-
       <div class="live-card">
         <h3>Umidità</h3>
         <div id="humLive" class="live-value">--</div>
@@ -209,16 +215,20 @@
     </div>
   </div>
 
-  <!-- Pulsanti gestione -->
+  <!-- GESTIONE -->
   <div class="card">
     <h2>Gestione dispositivo</h2>
     <button class="btn btn-refresh" onclick="location.reload()">Aggiorna dati</button>
     <button class="btn btn-danger" onclick="location.href='/resetwifi'">Reset Wi‑Fi</button>
     <button class="btn btn-reboot" onclick="location.href='/reboot'">Riavvia ESP32</button>
     <button class="btn btn-dark" onclick="toggleDarkMode()">Tema Scuro</button>
+
+    <!-- DOWNLOAD DATI -->
+    <button class="btn btn-download" onclick="downloadCSV()">Scarica CSV</button>
+    <button class="btn btn-download" onclick="downloadExcel()">Scarica Excel</button>
   </div>
 
-  <!-- Pulsanti intervallo -->
+  <!-- INTERVALLO -->
   <div class="card">
     <h2>Intervallo dati</h2>
     <button class="btn btn-24h" onclick="setRange(1)">Ultime 24 ore</button>
@@ -226,7 +236,7 @@
     <button class="btn btn-30d" onclick="setRange(30)">Ultimo mese</button>
   </div>
 
-  <!-- Grafico Temperatura -->
+  <!-- GRAFICO TEMPERATURA -->
   <div class="card">
     <h2>Temperatura</h2>
     <iframe id="tempFrame"
@@ -234,7 +244,7 @@
     </iframe>
   </div>
 
-  <!-- Grafico Umidità -->
+  <!-- GRAFICO UMIDITÀ -->
   <div class="card">
     <h2>Umidità</h2>
     <iframe id="humFrame"
@@ -242,7 +252,7 @@
     </iframe>
   </div>
 
-  <!-- GRAFICO DEL VENTO -->
+  <!-- GRAFICO VENTO -->
   <div class="card">
     <h2>Vento – Velocità e Direzione</h2>
     <canvas id="windChart" height="300"></canvas>
@@ -254,131 +264,134 @@
   Stazione Meteo Mondagnola – Powered by ESP32 & ThingSpeak
 </footer>
 
-<!-- LIBRERIE PER IL GRAFICO DEL VENTO -->
+<!-- Librerie -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-windrose"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <script>
-  function toggleDarkMode() {
-    document.body.classList.toggle("dark");
-  }
 
-  function setRange(days) {
-    document.getElementById("tempFrame").src =
-      "https://thingspeak.com/channels/3138316/charts/1?days=" + days +
-      "&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Temperature";
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+}
 
-    document.getElementById("humFrame").src =
-      "https://thingspeak.com/channels/3138316/charts/2?days=" + days +
-      "&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Humidity";
-  }
+function setRange(days) {
+  document.getElementById("tempFrame").src =
+    "https://thingspeak.com/channels/3138316/charts/1?days=" + days +
+    "&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Temperature";
 
-  // LIVE NUMERICI
-  async function updateLive() {
-    const temp = await fetch("https://api.thingspeak.com/channels/3138316/fields/1/last.txt").then(r => r.text());
-    const hum  = await fetch("https://api.thingspeak.com/channels/3138316/fields/2/last.txt").then(r => r.text());
+  document.getElementById("humFrame").src =
+    "https://thingspeak.com/channels/3138316/charts/2?days=" + days +
+    "&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Humidity";
+}
 
-    document.getElementById("tempLive").textContent = parseFloat(temp).toFixed(1) + "°C";
-    document.getElementById("humLive").textContent  = parseFloat(hum).toFixed(1) + "%";
-  }
+async function updateLive() {
+  const temp = await fetch("https://api.thingspeak.com/channels/3138316/fields/1/last.txt").then(r => r.text());
+  const hum  = await fetch("https://api.thingspeak.com/channels/3138316/fields/2/last.txt").then(r => r.text());
 
-  updateLive();
-  setInterval(updateLive, 30000);
+  document.getElementById("tempLive").textContent = parseFloat(temp).toFixed(1) + "°C";
+  document.getElementById("humLive").textContent  = parseFloat(hum).toFixed(1) + "%";
+}
 
-  // WIDGET METEO OPEN-METEO
-  async function loadWeather() {
-    const url = "https://api.open-meteo.com/v1/forecast?latitude=44.307&longitude=7.825&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max&timezone=Europe%2FRome";
+updateLive();
+setInterval(updateLive, 30000);
 
-    const data = await fetch(url).then(r => r.json());
+async function loadWeather() {
+  const url = "https://api.open-meteo.com/v1/forecast?latitude=44.307&longitude=7.825&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max&timezone=Europe%2FRome";
 
-    const icons = {
-      0: "☀️",
-      1: "🌤️",
-      2: "⛅",
-      3: "☁️",
-      45: "🌫️",
-      48: "🌫️",
-      51: "🌦️",
-      61: "🌧️",
-      71: "🌨️",
-      80: "🌦️",
-      95: "⛈️"
-    };
+  const data = await fetch(url).then(r => r.json());
 
-    const desc = {
-      0: "Sereno",
-      1: "Preval. sereno",
-      2: "Parz. nuvoloso",
-      3: "Coperto",
-      45: "Nebbia",
-      48: "Nebbia",
-      51: "Pioviggine",
-      61: "Pioggia",
-      71: "Neve",
-      80: "Rovesci",
-      95: "Temporale"
-    };
+  const icons = {
+    0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️",
+    45: "🌫️", 48: "🌫️",
+    51: "🌦️", 61: "🌧️", 71: "🌨️",
+    80: "🌦️", 95: "⛈️"
+  };
 
-    let html = "";
+  const desc = {
+    0: "Sereno", 1: "Preval. sereno", 2: "Parz. nuvoloso", 3: "Coperto",
+    45: "Nebbia", 48: "Nebbia",
+    51: "Pioviggine", 61: "Pioggia", 71: "Neve",
+    80: "Rovesci", 95: "Temporale"
+  };
 
-    for (let i = 0; i < 4; i++) {
-      html += `
-        <div class="weather-day">
-          <div style="font-size:30px">${icons[data.daily.weathercode[i]] || "❓"}</div>
-          <div class="weather-temp">
-            ${data.daily.temperature_2m_max[i].toFixed(1)}° / 
-            ${data.daily.temperature_2m_min[i].toFixed(1)}°
-          </div>
-          <div class="weather-desc">${desc[data.daily.weathercode[i]] || "N/D"}</div>
-          <div class="weather-extra">
-            💧 Pioggia: ${data.daily.precipitation_probability_max[i]}%<br>
-            🌬️ Vento: ${data.daily.windspeed_10m_max[i].toFixed(1)} km/h
-          </div>
+  let html = "";
+
+  for (let i = 0; i < 4; i++) {
+    html += `
+      <div class="weather-day">
+        <div style="font-size:30px">${icons[data.daily.weathercode[i]] || "❓"}</div>
+        <div class="weather-temp">
+          ${data.daily.temperature_2m_max[i].toFixed(1)}° /
+          ${data.daily.temperature_2m_min[i].toFixed(1)}°
         </div>
-      `;
+        <div class="weather-desc">${desc[data.daily.weathercode[i]] || "N/D"}</div>
+        <div class="weather-extra">
+          💧 Pioggia: ${data.daily.precipitation_probability_max[i]}%<br>
+          🌬️ Vento: ${data.daily.windspeed_10m_max[i].toFixed(1)} km/h
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById("weatherWidget").innerHTML = html;
+}
+
+setTimeout(loadWeather, 300);
+
+async function loadWindChart() {
+  const url = "https://api.open-meteo.com/v1/forecast?latitude=44.307&longitude=7.825&daily=windspeed_10m_max,winddirection_10m_dominant&timezone=Europe%2FRome";
+
+  const data = await fetch(url).then(r => r.json());
+
+  const speeds = data.daily.windspeed_10m_max;
+  const dirs = data.daily.winddirection_10m_dominant;
+
+  const ctx = document.getElementById("windChart");
+
+  new Chart(ctx, {
+    type: "windrose",
+    data: {
+      labels: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+      datasets: [{
+        label: "Vento (km/h)",
+        data: dirs.map((d, i) => ({
+          direction: d,
+          value: speeds[i]
+        })),
+        backgroundColor: "rgba(52, 152, 219, 0.6)"
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } }
     }
+  });
+}
 
-    document.getElementById("weatherWidget").innerHTML = html;
-  }
+setTimeout(loadWindChart, 500);
 
-  // Ritardo per Firefox
-  setTimeout(loadWeather, 300);
+function downloadCSV() {
+  const url = "https://api.thingspeak.com/channels/3138316/feeds.csv?results=15000";
+  window.open(url, "_blank");
+}
 
-  // GRAFICO DEL VENTO
-  async function loadWindChart() {
-    const url = "https://api.open-meteo.com/v1/forecast?latitude=44.307&longitude=7.825&daily=windspeed_10m_max,winddirection_10m_dominant&timezone=Europe%2FRome";
+async function downloadExcel() {
+  const url = "https://api.thingspeak.com/channels/3138316/feeds.json?results=15000";
+  const data = await fetch(url).then(r => r.json());
 
-    const data = await fetch(url).then(r => r.json());
+  const rows = data.feeds.map(f => ({
+    Timestamp: f.created_at,
+    Temperatura: parseFloat(f.field1).toFixed(1),
+    Umidità: parseFloat(f.field2).toFixed(1)
+  }));
 
-    const speeds = data.daily.windspeed_10m_max;
-    const dirs = data.daily.winddirection_10m_dominant;
+  const worksheet = XLSX.utils.json_to_sheet(rows);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Dati Meteo");
 
-    const ctx = document.getElementById("windChart");
+  XLSX.writeFile(workbook, "dati_meteo_mondagnola.xlsx");
+}
 
-    new Chart(ctx, {
-      type: "windrose",
-      data: {
-        labels: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
-        datasets: [{
-          label: "Vento (km/h)",
-          data: dirs.map((d, i) => ({
-            direction: d,
-            value: speeds[i]
-          })),
-          backgroundColor: "rgba(52, 152, 219, 0.6)"
-        }]
-      },
-      options: {
-        plugins: {
-          legend: { display: false }
-        }
-      }
-    });
-  }
-
-  setTimeout(loadWindChart, 500);
 </script>
-
 </body>
 </html>
-
