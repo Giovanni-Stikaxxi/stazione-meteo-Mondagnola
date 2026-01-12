@@ -111,9 +111,9 @@
 
     .weather-day {
       flex: 1;
-      min-width: 120px;
+      min-width: 150px;
       background: #f7f9fa;
-      padding: 10px;
+      padding: 12px;
       border-radius: 10px;
       text-align: center;
       box-shadow: 0 1px 4px rgba(0,0,0,0.15);
@@ -128,6 +128,18 @@
       font-size: 18px;
       font-weight: bold;
       margin-top: 5px;
+    }
+
+    .weather-desc {
+      font-size: 14px;
+      margin-top: 5px;
+      color: #555;
+    }
+
+    .weather-extra {
+      font-size: 13px;
+      margin-top: 5px;
+      color: #333;
     }
 
     footer {
@@ -225,8 +237,8 @@
     const temp = await fetch("https://api.thingspeak.com/channels/3138316/fields/1/last.txt").then(r => r.text());
     const hum  = await fetch("https://api.thingspeak.com/channels/3138316/fields/2/last.txt").then(r => r.text());
 
-    document.getElementById("tempLive").textContent = temp.trim() + "°C";
-    document.getElementById("humLive").textContent  = hum.trim() + "%";
+    document.getElementById("tempLive").textContent = parseFloat(temp).toFixed(1) + "°C";
+    document.getElementById("humLive").textContent  = parseFloat(hum).toFixed(1) + "%";
   }
 
   updateLive();
@@ -234,7 +246,7 @@
 
   // WIDGET METEO OPEN-METEO
   async function loadWeather() {
-    const url = "https://api.open-meteo.com/v1/forecast?latitude=44.307&longitude=7.825&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Europe%2FRome";
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=44.307&longitude=7.825&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max&timezone=Europe%2FRome";
 
     const data = await fetch(url).then(r => r.json());
 
@@ -252,13 +264,35 @@
       95: "⛈️"
     };
 
+    const desc = {
+      0: "Sereno",
+      1: "Preval. sereno",
+      2: "Parz. nuvoloso",
+      3: "Coperto",
+      45: "Nebbia",
+      48: "Nebbia",
+      51: "Pioviggine",
+      61: "Pioggia",
+      71: "Neve",
+      80: "Rovesci",
+      95: "Temporale"
+    };
+
     let html = "";
 
     for (let i = 0; i < 4; i++) {
       html += `
         <div class="weather-day">
           <div style="font-size:30px">${icons[data.daily.weathercode[i]] || "❓"}</div>
-          <div class="weather-temp">${data.daily.temperature_2m_max[i]}° / ${data.daily.temperature_2m_min[i]}°</div>
+          <div class="weather-temp">
+            ${data.daily.temperature_2m_max[i].toFixed(1)}° / 
+            ${data.daily.temperature_2m_min[i].toFixed(1)}°
+          </div>
+          <div class="weather-desc">${desc[data.daily.weathercode[i]] || "N/D"}</div>
+          <div class="weather-extra">
+            💧 Pioggia: ${data.daily.precipitation_probability_max[i]}%<br>
+            🌬️ Vento: ${data.daily.windspeed_10m_max[i].toFixed(1)} km/h
+          </div>
         </div>
       `;
     }
