@@ -95,9 +95,10 @@
       text-align: center;
     }
 
-    .live-card h3 {
-      margin: 0 0 10px 0;
-      color: #2c3e50;
+    .live-value {
+      font-size: 48px;
+      font-weight: bold;
+      color: #2980b9;
     }
 
     footer {
@@ -118,19 +119,28 @@
 
 <div class="container">
 
-  <!-- LIVE INDICATORS -->
+  <!-- PREVISIONI METEO PICCOLE E SOPRA I GRAFICI -->
+  <div class="card">
+    <h2>Previsioni Meteo – Frabosa Soprana</h2>
+    <iframe 
+      src="https://www.meteoblue.com/en/weather/widget/daily/frabosa-soprana_italy_3176542?days=4&tempunit=C&windunit=kmh&layout=light&apikey=free"
+      style="width:100%; height:350px; border:none; border-radius:10px;">
+    </iframe>
+  </div>
+
+  <!-- LIVE INDICATORS NUMERICI -->
   <div class="card">
     <h2>Dati in tempo reale</h2>
 
     <div class="live-box">
       <div class="live-card">
         <h3>Temperatura</h3>
-        <iframe src="https://thingspeak.com/channels/3138316/widgets/1" style="height:120px;"></iframe>
+        <div id="tempLive" class="live-value">--</div>
       </div>
 
       <div class="live-card">
         <h3>Umidità</h3>
-        <iframe src="https://thingspeak.com/channels/3138316/widgets/2" style="height:120px;"></iframe>
+        <div id="humLive" class="live-value">--</div>
       </div>
     </div>
   </div>
@@ -167,17 +177,6 @@
     </iframe>
   </div>
 
-  <!-- Previsioni Meteo (Meteoblue) -->
-  <div class="card">
-    <h2>Previsioni Meteo – Frabosa Soprana (Mondagnola)</h2>
-
-    <iframe 
-      src="https://www.meteoblue.com/en/weather/widget/daily/frabosa-soprana_italy_3176542?days=5&tempunit=C&windunit=kmh&layout=light&apikey=free"
-      style="width:100%; height:600px; border:none; border-radius:10px;">
-    </iframe>
-
-  </div>
-
 </div>
 
 <footer>
@@ -194,6 +193,18 @@
       "https://thingspeak.com/channels/3138316/charts/2?days=" + days +
       "&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Humidity";
   }
+
+  // LIVE NUMERICI
+  async function updateLive() {
+    const temp = await fetch("https://api.thingspeak.com/channels/3138316/fields/1/last.txt").then(r => r.text());
+    const hum  = await fetch("https://api.thingspeak.com/channels/3138316/fields/2/last.txt").then(r => r.text());
+
+    document.getElementById("tempLive").textContent = temp.trim() + "°C";
+    document.getElementById("humLive").textContent  = hum.trim() + "%";
+  }
+
+  updateLive();
+  setInterval(updateLive, 30000); // aggiorna ogni 30 secondi
 </script>
 
 </body>
