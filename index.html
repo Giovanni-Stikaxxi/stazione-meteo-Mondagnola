@@ -122,10 +122,18 @@
   <!-- PREVISIONI METEO PICCOLE E SOPRA I GRAFICI -->
   <div class="card">
     <h2>Previsioni Meteo – Frabosa Soprana</h2>
-    <iframe 
-      src="https://www.meteoblue.com/en/weather/widget/small/frabosa-soprana_italy_3176542?days=4&tempunit=C&windunit=kmh&layout=light&fontsize=12&apikey=free"
-      style="width:100%; height:220px; border:none; border-radius:10px;">
-    </iframe>
+
+    <div id="meteoblueWidget"></div>
+
+    <script type="text/javascript">
+      (function() {
+        var mb = document.createElement('script');
+        mb.type = 'text/javascript';
+        mb.async = true;
+        mb.src = 'https://www.meteoblue.com/en/weather/widget/small/frabosa-soprana_italy_3176542?days=4&tempunit=C&windunit=kmh&layout=light&fontsize=12&apikey=free';
+        document.getElementById('meteoblueWidget').appendChild(mb);
+      })();
+    </script>
   </div>
 
   <!-- LIVE INDICATORS NUMERICI -->
