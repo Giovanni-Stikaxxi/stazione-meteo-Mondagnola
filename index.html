@@ -101,6 +101,35 @@
       color: #2980b9;
     }
 
+    /* WIDGET METEO */
+    .weather-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .weather-day {
+      flex: 1;
+      min-width: 120px;
+      background: #f7f9fa;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+
+    .weather-day img {
+      width: 45px;
+      height: 45px;
+    }
+
+    .weather-temp {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
     footer {
       text-align: center;
       padding: 20px;
@@ -119,21 +148,10 @@
 
 <div class="container">
 
-  <!-- PREVISIONI METEO PICCOLE E SOPRA I GRAFICI -->
+  <!-- WIDGET METEO OPEN-METEO -->
   <div class="card">
     <h2>Previsioni Meteo – Frabosa Soprana</h2>
-
-    <div id="meteoblueWidget"></div>
-
-    <script type="text/javascript">
-      (function() {
-        var mb = document.createElement('script');
-        mb.type = 'text/javascript';
-        mb.async = true;
-        mb.src = 'https://www.meteoblue.com/en/weather/widget/small/frabosa-soprana_italy_3176542?days=4&tempunit=C&windunit=kmh&layout=light&fontsize=12&apikey=free';
-        document.getElementById('meteoblueWidget').appendChild(mb);
-      })();
-    </script>
+    <div id="weatherWidget" class="weather-grid">Caricamento...</div>
   </div>
 
   <!-- LIVE INDICATORS NUMERICI -->
@@ -212,7 +230,43 @@
   }
 
   updateLive();
-  setInterval(updateLive, 30000); // aggiorna ogni 30 secondi
+  setInterval(updateLive, 30000);
+
+  // WIDGET METEO OPEN-METEO
+  async function loadWeather() {
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=44.307&longitude=7.825&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Europe%2FRome";
+
+    const data = await fetch(url).then(r => r.json());
+
+    const icons = {
+      0: "☀️",
+      1: "🌤️",
+      2: "⛅",
+      3: "☁️",
+      45: "🌫️",
+      48: "🌫️",
+      51: "🌦️",
+      61: "🌧️",
+      71: "🌨️",
+      80: "🌦️",
+      95: "⛈️"
+    };
+
+    let html = "";
+
+    for (let i = 0; i < 4; i++) {
+      html += `
+        <div class="weather-day">
+          <div style="font-size:30px">${icons[data.daily.weathercode[i]] || "❓"}</div>
+          <div class="weather-temp">${data.daily.temperature_2m_max[i]}° / ${data.daily.temperature_2m_min[i]}°</div>
+        </div>
+      `;
+    }
+
+    document.getElementById("weatherWidget").innerHTML = html;
+  }
+
+  loadWeather();
 </script>
 
 </body>
