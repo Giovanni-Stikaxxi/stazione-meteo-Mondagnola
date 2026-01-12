@@ -55,7 +55,7 @@
 
     iframe {
       width: 100%;
-      height: 500px; /* GRAFICI PIÙ PICCOLI */
+      height: 450px;
       border: none;
       border-radius: 10px;
     }
@@ -98,12 +98,6 @@
     .live-card h3 {
       margin: 0 0 10px 0;
       color: #2c3e50;
-    }
-
-    .live-value {
-      font-size: 48px;
-      font-weight: bold;
-      color: #2980b9;
     }
 
     footer {
@@ -161,7 +155,7 @@
   <div class="card">
     <h2>Temperatura</h2>
     <iframe id="tempFrame"
-      src="https://thingspeak.com/channels/3138316/charts/1?days=1&type=line&lineWidth=1&interval=30&average=30&width=1200&height=600&title=Mondagnola+Temperature">
+      src="https://thingspeak.com/channels/3138316/charts/1?days=1&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Temperature">
     </iframe>
   </div>
 
@@ -169,17 +163,19 @@
   <div class="card">
     <h2>Umidità</h2>
     <iframe id="humFrame"
-      src="https://thingspeak.com/channels/3138316/charts/2?days=1&type=line&lineWidth=1&interval=30&average=30&width=1200&height=600&title=Mondagnola+Humidity">
+      src="https://thingspeak.com/channels/3138316/charts/2?days=1&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Humidity">
     </iframe>
   </div>
 
   <!-- Previsioni Meteo (Meteoblue) -->
   <div class="card">
     <h2>Previsioni Meteo – Frabosa Soprana (Mondagnola)</h2>
+
     <iframe 
-      src="https://www.meteoblue.com/en/weather/widget/daily/frabosa-soprana_italy_3176542?days=5&tempunit=C&windunit=kmh&layout=light"
+      src="https://www.meteoblue.com/en/weather/widget/daily/frabosa-soprana_italy_3176542?days=5&tempunit=C&windunit=kmh&layout=light&apikey=free"
       style="width:100%; height:600px; border:none; border-radius:10px;">
     </iframe>
+
   </div>
 
 </div>
@@ -192,11 +188,11 @@
   function setRange(days) {
     document.getElementById("tempFrame").src =
       "https://thingspeak.com/channels/3138316/charts/1?days=" + days +
-      "&type=line&lineWidth=1&interval=30&average=30&width=1200&height=600&title=Mondagnola+Temperature";
+      "&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Temperature";
 
     document.getElementById("humFrame").src =
       "https://thingspeak.com/channels/3138316/charts/2?days=" + days +
-      "&type=line&lineWidth=1&interval=30&average=30&width=1200&height=600&title=Mondagnola+Humidity";
+      "&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Humidity";
   }
 </script>
 
