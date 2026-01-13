@@ -252,21 +252,13 @@
     </iframe>
   </div>
 
-  <!-- GRAFICO VENTO -->
-  <div class="card">
-    <h2>Vento – Velocità e Direzione</h2>
-    <canvas id="windChart" height="300"></canvas>
-  </div>
-
 </div>
 
 <footer>
   Stazione Meteo Mondagnola – Powered by ESP32 & ThingSpeak
 </footer>
 
-<!-- Librerie -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-windrose"></script>
+<!-- Libreria Excel -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <script>
@@ -338,37 +330,6 @@ async function loadWeather() {
 }
 
 setTimeout(loadWeather, 300);
-
-async function loadWindChart() {
-  const url = "https://api.open-meteo.com/v1/forecast?latitude=44.307&longitude=7.825&daily=windspeed_10m_max,winddirection_10m_dominant&timezone=Europe%2FRome";
-
-  const data = await fetch(url).then(r => r.json());
-
-  const speeds = data.daily.windspeed_10m_max;
-  const dirs = data.daily.winddirection_10m_dominant;
-
-  const ctx = document.getElementById("windChart");
-
-  new Chart(ctx, {
-    type: "windrose",
-    data: {
-      labels: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
-      datasets: [{
-        label: "Vento (km/h)",
-        data: dirs.map((d, i) => ({
-          direction: d,
-          value: speeds[i]
-        })),
-        backgroundColor: "rgba(52, 152, 219, 0.6)"
-      }]
-    },
-    options: {
-      plugins: { legend: { display: false } }
-    }
-  });
-}
-
-setTimeout(loadWindChart, 500);
 
 function downloadCSV() {
   const url = "https://api.thingspeak.com/channels/3138316/feeds.csv?results=15000";
