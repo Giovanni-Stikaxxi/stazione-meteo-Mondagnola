@@ -3,22 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Stazione Meteo Mondagnola</title>
-
-  <!-- VIEWPORT FIX PER iOS -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- PWA / WEB APP -->
   <meta name="theme-color" content="#2c3e50">
-
-  <!-- iPhone fullscreen -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Meteo Mondagnola">
-
-  <!-- Manifest -->
   <link rel="manifest" href="manifest.json">
-
-  <!-- Icona iPhone -->
   <link rel="apple-touch-icon" href="icons/icon-192.png">
 
   <style>
@@ -315,11 +307,19 @@ async function loadWeather() {
     80: "Rovesci", 95: "Temporale"
   };
 
+  const giorni = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
+
   let html = "";
 
   for (let i = 0; i < 4; i++) {
+
+    const d = new Date(data.daily.time[i]);
+    const giorno = giorni[d.getDay()];
+    const dataIT = d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" });
+
     html += `
       <div class="weather-day">
+        <div><strong>${giorno} ${dataIT}</strong></div>
         <div style="font-size:30px">${icons[data.daily.weathercode[i]] || "❓"}</div>
         <div class="weather-temp">
           ${data.daily.temperature_2m_max[i].toFixed(1)}° /
@@ -362,13 +362,5 @@ async function downloadExcel() {
 }
 
 </script>
-
-<!-- SERVICE WORKER -->
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js");
-  }
-</script>
-
 </body>
 </html>
