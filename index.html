@@ -30,17 +30,11 @@
       align-items: center;
       justify-content: center;
       gap: 20px;
-      transition: background 0.3s;
     }
 
     header img {
       height: 60px;
       border-radius: 8px;
-    }
-
-    header h1 {
-      font-size: 26px;
-      margin: 0;
     }
 
     .container {
@@ -56,13 +50,11 @@
       margin-bottom: 25px;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      transition: background 0.3s, color 0.3s;
     }
 
     h2 {
       margin-top: 0;
       color: #34495e;
-      transition: color 0.3s;
     }
 
     iframe {
@@ -106,7 +98,6 @@
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       text-align: center;
-      transition: background 0.3s, color 0.3s;
     }
 
     .live-value {
@@ -130,25 +121,29 @@
       border-radius: 10px;
       text-align: center;
       box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-      transition: background 0.3s, color 0.3s;
     }
 
-    .weather-temp {
-      font-size: 18px;
+    /* WIDGET ORARIO */
+    .hourly-grid {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding-bottom: 10px;
+    }
+
+    .hour-box {
+      min-width: 90px;
+      background: #f7f9fa;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+
+    .hour-time {
       font-weight: bold;
-      margin-top: 5px;
-    }
-
-    .weather-desc {
-      font-size: 14px;
-      margin-top: 5px;
-      color: #555;
-    }
-
-    .weather-extra {
-      font-size: 13px;
-      margin-top: 5px;
-      color: #333;
+      margin-bottom: 5px;
     }
 
     footer {
@@ -156,7 +151,6 @@
       padding: 20px;
       color: #7f8c8d;
       font-size: 14px;
-      transition: color 0.3s;
     }
 
     /* TEMA SCURO */
@@ -165,21 +159,14 @@
       color: #e0e0e0;
     }
 
-    body.dark header {
-      background: #111;
-    }
-
     body.dark .card {
       background: #2b2b2b;
       color: #e0e0e0;
     }
 
+    body.dark .hour-box,
     body.dark .weather-day {
       background: #333;
-      color: #eee;
-    }
-
-    body.dark h2 {
       color: #eee;
     }
   </style>
@@ -194,10 +181,16 @@
 
 <div class="container">
 
-  <!-- WIDGET METEO -->
+  <!-- PREVISIONI GIORNALIERE -->
   <div class="card">
     <h2>Previsioni Meteo – Frabosa Soprana</h2>
     <div id="weatherWidget" class="weather-grid">Caricamento...</div>
+  </div>
+
+  <!-- WIDGET ORARIO -->
+  <div class="card">
+    <h2>Meteo orario – Prossime 24 ore</h2>
+    <div id="hourlyWidget" class="hourly-grid">Caricamento...</div>
   </div>
 
   <!-- LIVE -->
@@ -222,8 +215,6 @@
     <button class="btn btn-danger" onclick="location.href='/resetwifi'">Reset Wi‑Fi</button>
     <button class="btn btn-reboot" onclick="location.href='/reboot'">Riavvia ESP32</button>
     <button class="btn btn-dark" onclick="toggleDarkMode()">Tema Scuro</button>
-
-    <!-- DOWNLOAD DATI -->
     <button class="btn btn-download" onclick="downloadCSV()">Scarica CSV</button>
     <button class="btn btn-download" onclick="downloadExcel()">Scarica Excel</button>
   </div>
@@ -236,19 +227,18 @@
     <button class="btn btn-30d" onclick="setRange(30)">Ultimo mese</button>
   </div>
 
-  <!-- GRAFICO TEMPERATURA -->
+  <!-- GRAFICI -->
   <div class="card">
     <h2>Temperatura</h2>
     <iframe id="tempFrame"
-      src="https://thingspeak.com/channels/3138316/charts/1?days=1&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Temperature">
+      src="https://thingspeak.com/channels/3138316/charts/1?days=1&type=line&average=30">
     </iframe>
   </div>
 
-  <!-- GRAFICO UMIDITÀ -->
   <div class="card">
     <h2>Umidità</h2>
     <iframe id="humFrame"
-      src="https://thingspeak.com/channels/3138316/charts/2?days=1&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Humidity">
+      src="https://thingspeak.com/channels/3138316/charts/2?days=1&type=line&average=30">
     </iframe>
   </div>
 
@@ -258,7 +248,6 @@
   Stazione Meteo Mondagnola – Powered by ESP32 & ThingSpeak
 </footer>
 
-<!-- Libreria Excel -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <script>
@@ -269,12 +258,10 @@ function toggleDarkMode() {
 
 function setRange(days) {
   document.getElementById("tempFrame").src =
-    "https://thingspeak.com/channels/3138316/charts/1?days=" + days +
-    "&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Temperature";
+    "https://thingspeak.com/channels/3138316/charts/1?days=" + days + "&type=line&average=30";
 
   document.getElementById("humFrame").src =
-    "https://thingspeak.com/channels/3138316/charts/2?days=" + days +
-    "&dynamic=false&type=line&lineWidth=1&interval=30&average=30&width=900&height=400&title=Mondagnola+Humidity";
+    "https://thingspeak.com/channels/3138316/charts/2?days=" + days + "&type=line&average=30";
 }
 
 async function updateLive() {
@@ -312,7 +299,6 @@ async function loadWeather() {
   let html = "";
 
   for (let i = 0; i < 4; i++) {
-
     const d = new Date(data.daily.time[i]);
     const giorno = giorni[d.getDay()];
     const dataIT = d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" });
@@ -320,12 +306,12 @@ async function loadWeather() {
     html += `
       <div class="weather-day">
         <div><strong>${giorno} ${dataIT}</strong></div>
-        <div style="font-size:30px">${icons[data.daily.weathercode[i]] || "❓"}</div>
+        <div style="font-size:30px">${icons[data.daily.weathercode[i]]}</div>
         <div class="weather-temp">
           ${data.daily.temperature_2m_max[i].toFixed(1)}° /
           ${data.daily.temperature_2m_min[i].toFixed(1)}°
         </div>
-        <div class="weather-desc">${desc[data.daily.weathercode[i]] || "N/D"}</div>
+        <div class="weather-desc">${desc[data.daily.weathercode[i]]}</div>
         <div class="weather-extra">
           💧 Pioggia: ${data.daily.precipitation_probability_max[i]}%<br>
           🌬️ Vento: ${data.daily.windspeed_10m_max[i].toFixed(1)} km/h
@@ -337,11 +323,42 @@ async function loadWeather() {
   document.getElementById("weatherWidget").innerHTML = html;
 }
 
+async function loadHourly() {
+  const url = "https://api.open-meteo.com/v1/forecast?latitude=44.307&longitude=7.825&hourly=temperature_2m,weathercode,precipitation_probability,windspeed_10m&forecast_days=1&timezone=Europe%2FRome";
+
+  const data = await fetch(url).then(r => r.json());
+
+  const icons = {
+    0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️",
+    45: "🌫️", 48: "🌫️",
+    51: "🌦️", 61: "🌧️", 71: "🌨️",
+    80: "🌦️", 95: "⛈️"
+  };
+
+  let html = "";
+
+  for (let i = 0; i < 24; i++) {
+    const time = data.hourly.time[i].split("T")[1].slice(0, 5);
+
+    html += `
+      <div class="hour-box">
+        <div class="hour-time">${time}</div>
+        <div style="font-size:26px">${icons[data.hourly.weathercode[i]]}</div>
+        <div>${data.hourly.temperature_2m[i].toFixed(1)}°C</div>
+        <div>💧 ${data.hourly.precipitation_probability[i]}%</div>
+        <div>🌬️ ${data.hourly.windspeed_10m[i].toFixed(1)} km/h</div>
+      </div>
+    `;
+  }
+
+  document.getElementById("hourlyWidget").innerHTML = html;
+}
+
 setTimeout(loadWeather, 300);
+setTimeout(loadHourly, 400);
 
 function downloadCSV() {
-  const url = "https://api.thingspeak.com/channels/3138316/feeds.csv?results=15000";
-  window.open(url, "_blank");
+  window.open("https://api.thingspeak.com/channels/3138316/feeds.csv?results=15000", "_blank");
 }
 
 async function downloadExcel() {
