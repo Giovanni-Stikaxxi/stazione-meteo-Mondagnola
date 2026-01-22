@@ -238,14 +238,14 @@
   <div class="card">
     <h2>Temperatura</h2>
     <iframe id="tempFrame"
-      src="https://thingspeak.com/channels/3138316/charts/1?days=1&type=line&average=30&height=600">
+      src="https://thingspeak.com/channels/3138316/charts/1?days=1&type=line&average=30&height=600&bgcolor=FFFFFF">
     </iframe>
   </div>
 
   <div class="card">
     <h2>Umidità</h2>
     <iframe id="humFrame"
-      src="https://thingspeak.com/channels/3138316/charts/2?days=1&type=line&average=30&height=600">
+      src="https://thingspeak.com/channels/3138316/charts/2?days=1&type=line&average=30&height=600&bgcolor=FFFFFF">
     </iframe>
   </div>
 
@@ -265,10 +265,10 @@ function toggleDarkMode() {
 
 function setRange(days) {
   document.getElementById("tempFrame").src =
-    "https://thingspeak.com/channels/3138316/charts/1?days=" + days + "&type=line&average=30&height=600";
+    "https://thingspeak.com/channels/3138316/charts/1?days=" + days + "&type=line&average=30&height=600&bgcolor=FFFFFF";
 
   document.getElementById("humFrame").src =
-    "https://thingspeak.com/channels/3138316/charts/2?days=" + days + "&type=line&average=30&height=600";
+    "https://thingspeak.com/channels/3138316/charts/2?days=" + days + "&type=line&average=30&height=600&bgcolor=FFFFFF";
 }
 
 async function updateLive() {
