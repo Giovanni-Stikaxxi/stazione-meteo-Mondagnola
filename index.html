@@ -16,6 +16,18 @@
         padding: 20px;
     }
 
+    /* Cornice decorativa vintage */
+    .sectionBox {
+        border: 3px double #8b6f47;
+        padding: 15px;
+        margin: 25px auto;
+        width: 90%;
+        max-width: 900px;
+        background: #fdfaf3;
+        box-shadow: 3px 3px 8px rgba(0,0,0,0.25);
+        border-radius: 10px;
+    }
+
     #header {
         display: flex;
         justify-content: center;
@@ -34,6 +46,13 @@
         margin: 0;
         color: #4a3b24;
         text-shadow: 1px 1px 2px #c8b89a;
+    }
+
+    h2 {
+        margin-top: 10px;
+        margin-bottom: 15px;
+        color: #4a3b24;
+        font-size: 26px;
     }
 
     #indicatorsRow {
@@ -99,11 +118,6 @@
         box-shadow: 3px 3px 8px rgba(0,0,0,0.25);
     }
 
-    h2 {
-        margin-top: 30px;
-        color: #4a3b24;
-    }
-
     #forecastHourly, #forecastDaily {
         display: flex;
         flex-wrap: nowrap;
@@ -121,11 +135,6 @@
         padding: 8px;
         font-size: 14px;
         box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
-    }
-
-    .forecastCard strong {
-        display: block;
-        margin-bottom: 4px;
     }
 
     .forecastIcon {
@@ -155,18 +164,24 @@
     <span id="lastUpdateText">Ultimo rilevamento: --</span>
 </div>
 
-<!-- NUOVO ORDINE -->
+<!-- NUOVO ORDINE + CORNICI + ICONE -->
 
-<h2>Previsioni prossimi giorni</h2>
-<div id="forecastDaily"></div>
+<div class="sectionBox">
+    <h2>☀️ Previsioni prossimi giorni</h2>
+    <div id="forecastDaily"></div>
+</div>
 
-<h2>Previsioni orarie</h2>
-<div id="forecastHourly"></div>
+<div class="sectionBox">
+    <h2>⏰ Previsioni orarie</h2>
+    <div id="forecastHourly"></div>
+</div>
 
-<h2>Andamento</h2>
-<button onclick="loadData('48h')">Ultime 48 ore</button>
-<button onclick="loadData('7d')">Ultima settimana</button>
-<canvas id="mainChart" width="700" height="350"></canvas>
+<div class="sectionBox">
+    <h2>📈 Andamento</h2>
+    <button onclick="loadData('48h')">Ultime 48 ore</button>
+    <button onclick="loadData('7d')">Ultima settimana</button>
+    <canvas id="mainChart" width="700" height="350"></canvas>
+</div>
 
 <script>
 /* -------------------------
