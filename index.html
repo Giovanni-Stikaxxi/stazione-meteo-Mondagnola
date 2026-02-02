@@ -114,7 +114,7 @@
     }
 
     .forecastCard {
-        min-width: 120px;
+        min-width: 140px;
         background: #fdfaf3;
         border: 2px solid #8b6f47;
         border-radius: 8px;
@@ -129,8 +129,7 @@
     }
 
     .forecastIcon {
-        width: 40px;
-        height: 40px;
+        font-size: 32px;
     }
 </style>
 </head>
@@ -156,17 +155,18 @@
     <span id="lastUpdateText">Ultimo rilevamento: --</span>
 </div>
 
-<h2>Andamento</h2>
-<button onclick="loadData('48h')">Ultime 48 ore</button>
-<button onclick="loadData('7d')">Ultima settimana</button>
+<!-- NUOVO ORDINE -->
 
-<canvas id="mainChart" width="700" height="350"></canvas>
+<h2>Previsioni prossimi giorni</h2>
+<div id="forecastDaily"></div>
 
 <h2>Previsioni orarie</h2>
 <div id="forecastHourly"></div>
 
-<h2>Previsioni prossimi giorni</h2>
-<div id="forecastDaily"></div>
+<h2>Andamento</h2>
+<button onclick="loadData('48h')">Ultime 48 ore</button>
+<button onclick="loadData('7d')">Ultima settimana</button>
+<canvas id="mainChart" width="700" height="350"></canvas>
 
 <script>
 /* -------------------------
@@ -275,7 +275,7 @@ loadData("48h");
    PREVISIONI OPEN-METEO
 -------------------------- */
 function loadOpenMeteo() {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,relativehumidity_2m,weathercode&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Europe/Rome`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,relativehumidity_2m,weathercode&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max&timezone=Europe/Rome`;
 
     fetch(url)
       .then(r => r.json())
@@ -315,7 +315,7 @@ function renderHourlyForecast(hourly) {
         card.className = "forecastCard";
         card.innerHTML = `
             <strong>${hour}</strong>
-            <div style="font-size:32px">${icon}</div>
+            <div class="forecastIcon">${icon}</div>
             <div>${temp} °C</div>
             <div>${hum}%</div>
         `;
@@ -336,15 +336,17 @@ function renderDailyForecast(daily) {
 
         const tmin = Math.round(daily.temperature_2m_min[i]);
         const tmax = Math.round(daily.temperature_2m_max[i]);
+        const rain = daily.precipitation_probability_max[i];
         const icon = getIcon(daily.weathercode[i]);
 
         const card = document.createElement("div");
         card.className = "forecastCard";
         card.innerHTML = `
             <strong>${day}</strong>
-            <div style="font-size:32px">${icon}</div>
+            <div class="forecastIcon">${icon}</div>
             <div>Max: ${tmax} °C</div>
             <div>Min: ${tmin} °C</div>
+            <div>Pioggia: ${rain}%</div>
         `;
         container.appendChild(card);
     }
