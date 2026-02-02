@@ -276,10 +276,10 @@ function loadData(period) {
 loadData("48h");
 
 /* -------------------------
-   PREVISIONI OPENWEATHER
+   PREVISIONI OPENWEATHER (One Call 2.5)
 -------------------------- */
 function loadOpenWeather() {
-    const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${LAT}&lon=${LON}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=it`;
+    const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${LAT}&lon=${LON}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=it`;
 
     fetch(url)
       .then(r => r.json())
